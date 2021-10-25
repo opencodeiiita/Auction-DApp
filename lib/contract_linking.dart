@@ -10,7 +10,10 @@ class ContractLinking extends ChangeNotifier {
 
   String _abiCode;
   EthereumAddress _contractAddress;
+  EthreumAddress _ownerAddress;
 
+  Credentials _credentials;
+  
   ContractFunction _bidderName;
   ContractFunction _bidAmount;
   ContractFunction _minAmount;
