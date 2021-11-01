@@ -59,6 +59,20 @@ class ContractLinking extends ChangeNotifier {
     _minAmount = _contract.function("minBid");
     _setBidder = _contract.function("setBidder");
   }
+
+  getBidderData() async {
+    List name = await _client
+        .call(contract: _contract, function: _bidderName, params: []);
+    List amount = await _client
+        .call(contract: _contract, function: _bidAmount, params: []);
+    List min = await _client
+        .call(contract: _contract, function: _minAmount, params: []);
+    List eligibility = await _client
+        .call(contract: _contract, function: _displayEligibility, params: []);
+
+    bidderName = name[0];
+    bidAmount = amount[0];
+    }
 }
 
 
