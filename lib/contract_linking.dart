@@ -1,3 +1,5 @@
+// ignore_for_file: unused_field
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:web3dart/web3dart.dart';
@@ -25,6 +27,10 @@ class ContractLinking extends ChangeNotifier {
   ContractFunction _minAmount;
   ContractFunction _setBidder;
   ContractFunction _minBid;
+  ContractFunction _displayEligibility;
+
+  String bidderName;
+  String bidAmount;
 
   initialSetup() async {
     _client = Web3Client(_rpcUrl, Client(), socketConnector: () {
@@ -42,9 +48,8 @@ class ContractLinking extends ChangeNotifier {
     _abiCode = jsonEncode(jsonAbi["abi"]);
 
     _contractAddress =
-      EthereumAddress.fromHex(jsonAbi["networks"]["5777"]["address"]);
+        EthereumAddress.fromHex(jsonAbi["networks"]["5777"]["address"]);
   }
-
 
   Future<void> getCredentials() async {
     _credentials = await _client.credentialsFromPrivateKey(_privateKey);
@@ -52,7 +57,8 @@ class ContractLinking extends ChangeNotifier {
   }
 
   Future<void> getDeployedContract() async {
-    _contract = DeployedContract(ContractAbi.fromJson(_abiCode, "Bidder"), _contractAddress);
+    _contract = DeployedContract(
+        ContractAbi.fromJson(_abiCode, "Bidder"), _contractAddress);
 
     _bidderName = _contract.function("bidderName");
     _bidAmount = _contract.function("bidAmount");
@@ -72,7 +78,15 @@ class ContractLinking extends ChangeNotifier {
 
     bidderName = name[0];
     bidAmount = amount[0];
-    }
+  }
+
+  setBidder(String _name, int money) async {
+    await _client.sendTransaction(
+        _credentials,
+        Transaction.callContract(
+            contract: _contract,
+            function: _setBidder,
+            parameters: [_name, BigInt.from(money)]));
+    getBidderData();
+  }
 }
-
-
